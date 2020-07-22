@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Captcha Chat</title>
+</head>
+<body>
+<h1>Chat</h1>
+<script type="text/javascript" src="http://cdn.socket.io/socket.io-1.4.0.js"></script>
+<pre id="messages" style="height: 400px; overflow: scroll"></pre>
+<input type="text" id="messageBox" placeholder="Type your message here" style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;" />
+<input type="text" id="author" placeholder="author" style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;" />
+<label style="color:red" for="captchaInput" id="labelCaptchaError"></label>
+<input type="text" id="captchaInput" placeholder="captcha" style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;" />
+<div style="width: 100%; height: 30px;"><img id="captchaImg" style="margin: auto; display: block" src=""/></div>
+<button id="send" title="Send Message!" style="width: 100%; height: 30px;">Send Message</button>
+
+<script>
+    (function() {
+        const sendBtn = document.querySelector('#send');
+        const captchaImg = document.querySelector('#captchaImg');
+        const captchaInput = document.querySelector('#captchaInput');
+        const messages = document.querySelector('#messages');
+        const messageBox = document.querySelector('#messageBox');
+        const authorBox = document.querySelector('#author');
+        const labelCaptchaError = document.querySelector('#labelCaptchaError');
+
+        let ws;
+
+        function showMessage(message) {
+            messages.textContent += `\n\n (${new Date(message.dateTime).toLocaleString()})${message.author}: ${message.text}`;
+            messages.scrollTop = messages.scrollHeight;
+            messageBox.value = '';
+        }
+        function captchaShow(captcha) {
+            captchaImg.src = `data:image/png;base64, ${captcha}`;
+        }
+
+        function init() {
+            ws = io.connect('http://localhost:6969');
+
+            ws.on('new_message', (data) => showMessage(data));
+            ws.on('captcha', (data) => captchaShow(data.captcha));
+            ws.on('error_captcha', () => {
+                labelCaptchaError.innerHTML = 'Error captcha, try again';
+                captchaInput.value = ''
+            });
+            ws.on('close', function() {
+                ws = null;
+            });
+        }
+
+        sendBtn.onclick = function() {
+            if (!ws) {
+                showMessage("No WebSocket connection :(");
+                return ;
+            }
+
+            ws.emit('message', {
+                text: messageBox.value,
+                captcha: captchaInput.value,
+                author: authorBox.value,
+            });
+            labelCaptchaError.innerHTML = '';
+            captchaInput.value = ''
+        };
+
+        init();
+    })();
+</script>
+</body>
+</html>
