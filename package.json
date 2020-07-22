@@ -9,9 +9,6 @@
   },
   "author": "",
   "license": "ISC",
-  "pre-push": [
-    "lint"
-  ],
   "dependencies": {
     "canvas": "2.6.1",
     "express": "4.17.1",
@@ -23,8 +20,7 @@
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-react": "7.20.3",
-    "eslint-plugin-react-hooks": "4.0.0",
-    "pre-push": "0.1.1"
+    "eslint-plugin-react-hooks": "4.0.0"
   },
   "engines": {
     "node": "10.x"
