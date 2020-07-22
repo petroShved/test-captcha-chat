@@ -37,7 +37,7 @@
         }
 
         function init() {
-            ws = io.connect('http://localhost:6969');
+            ws = io.connect('http://testcaptchachat.herokuapp.com');
 
             ws.on('new_message', (data) => showMessage(data));
             ws.on('captcha', (data) => captchaShow(data.captcha));
